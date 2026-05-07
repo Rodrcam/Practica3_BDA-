@@ -4,40 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} | Gestor Académico</title>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 </head>
 <body>
-    <nav>
-        <a class="nav-brand" href="/home/">Gestor Académico</a>
-        {% set path = request.path %}
-        <div class="nav-links">
-            <a href="/home/"      class="nav-link {{ 'active' if path == '/home/' }}">Inicio</a>
-            <a href="/profesores" class="nav-link {{ 'active' if path.startswith('/profesores') }}">Profesores</a>
-            <a href="/alumnos"    class="nav-link {{ 'active' if path.startswith('/alumnos') }}">Alumnos</a>
-            <a href="/cursos"     class="nav-link {{ 'active' if path.startswith('/cursos') }}">Cursos</a>
-            <a href="/matriculas"    class="nav-link {{ 'active' if path.startswith('/matriculas') }}">Matrículas</a>
-            <a href="/transacciones" class="nav-link {{ 'active' if path.startswith('/transacciones') }}">Transacciones</a>
+
+<nav class="navbar navbar-expand-lg ga-navbar">
+    <div class="container-xl">
+        <a class="navbar-brand" href="/home/">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="me-2" style="vertical-align:-2px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342" />
+            </svg>
+            Gestor Académico
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMain">
+            {% set path = request.path %}
+            <ul class="navbar-nav ms-3 me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if path == '/home/' }}" href="/home/">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if path.startswith('/profesores') }}" href="/profesores">Profesores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if path.startswith('/alumnos') }}" href="/alumnos">Alumnos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if path.startswith('/cursos') }}" href="/cursos">Cursos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if path.startswith('/matriculas') }}" href="/matriculas">Matrículas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if path.startswith('/transacciones') }}" href="/transacciones">Transacciones</a>
+                </li>
+            </ul>
+            <span class="navbar-text ga-badge-bda">BDA · PRÁCTICA 3</span>
         </div>
-        <div class="nav-spacer"></div>
-        <span class="nav-count">BDA · PRÁCTICA 3</span>
-    </nav>
+    </div>
+</nav>
 
-    <main class="main">
-        {% block content %}{% endblock %}
-    </main>
+<main class="ga-main">
+    {% block content %}{% endblock %}
+</main>
 
-    <script>
-    function showToast(msg, isError) {
-        const t = document.createElement('div');
-        t.className = 'toast' + (isError ? ' error' : '');
-        t.textContent = msg;
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 3200);
-    }
-    function openModal(id)  { document.getElementById(id).classList.remove('hidden'); }
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-    </script>
-    {% block scripts %}{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function showToast(msg, isError) {
+    const t = document.createElement('div');
+    t.className = 'ga-toast' + (isError ? ' ga-toast-error' : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+}
+function openModal(id)  { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+</script>
+{% block scripts %}{% endblock %}
+
 </body>
 </html>

@@ -1,72 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
 {% set initials = profesor[1].split()[:2] | map('first') | join | upper %}
-<div class="container page-enter">
-  <a class="detail-back" href="/profesores">← Volver a Profesores</a>
+<div class="container-xl py-4">
 
-  <div class="detail-grid">
-    <!-- Tarjeta lateral -->
-    <div>
-      <div class="detail-card">
-        <div class="detail-avatar">{{ initials }}</div>
-        <div class="detail-name">{{ profesor[1] }}</div>
-        <div class="detail-sub">Profesor · ID {{ profesor[0][:8] }}…</div>
-        <div class="detail-kpis">
-          <div class="kpi">
-            <span class="kpi-value">{{ profesor[2] }}</span>
-            <span class="kpi-label">Cursos</span>
-          </div>
-          <div class="kpi">
-            <span class="kpi-value">{{ profesor[3] }}</span>
-            <span class="kpi-label">Alumnos distintos</span>
-          </div>
+  <a href="/profesores" class="btn btn-sm btn-outline-secondary mb-4">
+    ← Volver a Profesores
+  </a>
+
+  <div class="row g-4">
+
+    <!-- Sidebar card -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="ga-card p-4">
+        <div class="ga-avatar">{{ initials }}</div>
+        <h5 class="fw-bold mb-1" style="color:#1a2035;">{{ profesor[1] }}</h5>
+        <p class="text-muted mb-3" style="font-size:0.82rem;">Profesor · ID {{ profesor[0][:8] }}…</p>
+
+        <div class="ga-kpi">
+          <span class="ga-kpi-value">{{ profesor[2] }}</span>
+          <span class="ga-kpi-label">Cursos</span>
         </div>
-        <button class="btn btn-danger" style="width:100%;margin-top:20px;"
-                onclick="openModal('modal-confirmar-eliminar')">Eliminar profesor</button>
+        <div class="ga-kpi">
+          <span class="ga-kpi-value">{{ profesor[3] }}</span>
+          <span class="ga-kpi-label">Alumnos distintos</span>
+        </div>
+
+        <button class="btn btn-danger btn-sm w-100 mt-3"
+                onclick="openModal('modal-confirmar-eliminar')">
+          Eliminar profesor
+        </button>
       </div>
     </div>
 
-    <!-- Tabla de cursos -->
-    <div>
-      <div class="section-title">Cursos impartidos</div>
+    <!-- Courses table -->
+    <div class="col-12 col-md-8 col-lg-9">
+      <h6 class="fw-bold text-uppercase text-muted mb-3" style="font-size:0.72rem;letter-spacing:0.07em;">
+        Cursos impartidos
+      </h6>
+
       {% if cursos %}
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Nombre</th><th>Alumnos</th></tr>
-          </thead>
-          <tbody>
-            {% for id, nombre, n_alumnos in cursos %}
-            <tr onclick="location.href='/cursos/{{ id }}'">
-              <td><strong>{{ nombre }}</strong></td>
-              <td><span class="badge">{{ n_alumnos }}</span></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+      <div class="ga-card">
+        <div class="table-responsive">
+          <table class="table ga-table table-hover table-clickable mb-0">
+            <thead>
+              <tr>
+                <th>Nombre del curso</th>
+                <th>Alumnos matriculados</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for id, nombre, n_alumnos in cursos %}
+              <tr onclick="location.href='/cursos/{{ id }}'">
+                <td><strong>{{ nombre }}</strong></td>
+                <td><span class="badge-count">{{ n_alumnos }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
       {% else %}
-      <div class="empty">
-        <div class="empty-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-          </svg>
+      <div class="ga-card">
+        <div class="ga-empty">
+          <div class="ga-empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="none" viewBox="0 0 24 24" stroke-width="1.3" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+            </svg>
+          </div>
+          Este profesor no tiene cursos asignados.
         </div>
-        Este profesor no tiene cursos asignados.
       </div>
       {% endif %}
     </div>
+
   </div>
 </div>
+
 <!-- Modal: Confirmar eliminación -->
 <div id="modal-confirmar-eliminar" class="modal-overlay hidden" onclick="if(event.target===this) closeModal('modal-confirmar-eliminar')">
-  <div class="modal modal-enter">
+  <div class="modal-box">
     <h2>Eliminar profesor</h2>
     <p class="modal-sub">Esta acción no se puede deshacer.</p>
-    <p style="margin:16px 0;">¿Seguro que deseas eliminar a <strong>{{ profesor[1] }}</strong>?</p>
-    <div class="form-actions">
-      <button type="button" class="btn" onclick="closeModal('modal-confirmar-eliminar')">Cancelar</button>
-      <button type="button" class="btn btn-danger" onclick="deleteProfesor('{{ profesor[0] }}')">Sí, eliminar</button>
+    <p class="mb-4">¿Seguro que deseas eliminar a <strong>{{ profesor[1] }}</strong>?</p>
+    <div class="d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="closeModal('modal-confirmar-eliminar')">Cancelar</button>
+      <button type="button" class="btn btn-danger btn-sm" onclick="deleteProfesor('{{ profesor[0] }}')">Sí, eliminar</button>
     </div>
   </div>
 </div>
