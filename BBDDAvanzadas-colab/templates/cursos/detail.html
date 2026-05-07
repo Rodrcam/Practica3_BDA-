@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+{% set initials = curso[1].split()[:2] | map('first') | join | upper %}
+<div class="container page-enter">
+  <a class="detail-back" href="/cursos">← Volver a Cursos</a>
+
+  <div class="detail-grid">
+    <!-- Tarjeta lateral -->
+    <div>
+      <div class="detail-card">
+        <div class="detail-avatar">{{ initials }}</div>
+        <div class="detail-name">{{ curso[1] }}</div>
+        <div class="detail-sub">Curso · ID {{ curso[0][:8] }}…</div>
+        <div class="detail-kpis">
+          <div class="kpi">
+            <span class="kpi-value">{{ curso[4] }}</span>
+            <span class="kpi-label">Alumnos</span>
+          </div>
+        </div>
+        <button class="btn btn-danger" style="width:100%;margin-top:20px;"
+                onclick="openModal('modal-confirmar-eliminar')">Eliminar curso</button>
+        <div class="section-title" style="margin-top:20px;margin-bottom:10px;">Profesor</div>
+        <a href="/profesores/{{ curso[2] }}" class="detail-profesor-link">
+          <div class="detail-profesor-avatar">
+            {{ curso[3].split()[:2] | map('first') | join | upper }}
+          </div>
+          <span class="detail-profesor-name">{{ curso[3] }}</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tabla de alumnos -->
+    <div>
+      <div class="section-title">Alumnos matriculados</div>
+      {% if alumnos %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Alumno</th><th>Email</th><th>Fecha matrícula</th></tr>
+          </thead>
+          <tbody>
+            {% for id, nombre, email, fecha in alumnos %}
+            <tr onclick="location.href='/alumnos/{{ id }}'">
+              <td><strong>{{ nombre }}</strong></td>
+              <td class="td-mono td-muted">{{ email }}</td>
+              <td class="td-mono td-muted">{{ fecha }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+          </svg>
+        </div>
+        No hay alumnos matriculados en este curso.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<!-- Modal: Confirmar eliminación -->
+<div id="modal-confirmar-eliminar" class="modal-overlay hidden" onclick="if(event.target===this) closeModal('modal-confirmar-eliminar')">
+  <div class="modal modal-enter">
+    <h2>Eliminar curso</h2>
+    <p class="modal-sub">Esta acción no se puede deshacer.</p>
+    <p style="margin:16px 0;">¿Seguro que deseas eliminar <strong>{{ curso[1] }}</strong>?</p>
+    <div class="form-actions">
+      <button type="button" class="btn" onclick="closeModal('modal-confirmar-eliminar')">Cancelar</button>
+      <button type="button" class="btn btn-danger" onclick="deleteCurso('{{ curso[0] }}')">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/cursos.js') }}"></script>
+{% endblock %}

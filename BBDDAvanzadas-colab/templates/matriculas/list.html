@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container page-enter">
+  <div class="page-header">
+    <h1>Matrículas</h1>
+    <p>GET /matriculas — {{ total }} registros</p>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-toolbar">
+      <form method="get" style="display:contents;">
+        <input class="search-input" name="q" value="{{ q }}" placeholder="Buscar alumno o curso…" autocomplete="off" />
+      </form>
+      <div class="toolbar-spacer"></div>
+      <button class="btn btn-primary" onclick="openModal('modal-nueva-matricula')">+ Matricular alumno</button>
+    </div>
+
+    {% if rows %}
+    <table>
+      <thead>
+        <tr><th>Alumno</th><th>Curso</th><th>Profesor</th><th>Fecha</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for alumno, curso, profesor, fecha, alumno_id, curso_id in rows %}
+        <tr>
+          <td><strong>{{ alumno }}</strong></td>
+          <td>{{ curso }}</td>
+          <td class="td-muted">{{ profesor }}</td>
+          <td class="td-mono td-muted">{{ fecha }}</td>
+          <td style="width:40px;">
+            <button class="btn btn-danger" style="padding:4px 10px;font-size:12px;"
+                    onclick="event.stopPropagation(); confirmDeleteMatricula('{{ alumno_id }}','{{ curso_id }}','{{ alumno }}','{{ curso }}')">✕</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <span class="pagination-info">{{ filtered }} registros</span>
+      <div class="pagination-btns">
+        <a href="?q={{ q }}&page={{ page - 1 }}" class="pg-btn {{ 'disabled' if page == 1 }}">‹</a>
+        {% for p in pages %}
+          <a href="?q={{ q }}&page={{ p }}" class="pg-btn {{ 'active' if p == page }}">{{ p }}</a>
+        {% endfor %}
+        <a href="?q={{ q }}&page={{ page + 1 }}" class="pg-btn {{ 'disabled' if page == total_pages }}">›</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty">
+      <div class="empty-icon">🔍</div>
+      No se encontraron matrículas{% if q %} para "{{ q }}"{% endif %}.
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Modal: Nueva Matrícula -->
+<div id="modal-nueva-matricula" class="modal-overlay hidden" onclick="if(event.target===this) closeModal('modal-nueva-matricula')">
+  <div class="modal modal-enter">
+    <h2>Matricular alumno</h2>
+    <p class="modal-sub">POST /matriculas/new</p>
+    <form id="form-matricula" onsubmit="submitMatricula(event)">
+      <!-- Alumno autocomplete -->
+      <div class="form-group">
+        <label class="form-label">Alumno</label>
+        <input class="form-input" id="m-alumno-q" placeholder="Buscar alumno…" autocomplete="off"
+               oninput="filterAlumnos(this.value)" />
+        <input type="hidden" name="alumno_id" id="m-alumno-id" />
+        <div class="autocomplete-list" id="m-alumno-list" style="display:none;"></div>
+        <p class="form-error" id="m-alumno_id-err" style="display:none;"></p>
+      </div>
+      <!-- Curso autocomplete -->
+      <div class="form-group">
+        <label class="form-label">Curso</label>
+        <input class="form-input" id="m-curso-q" placeholder="Buscar curso…" autocomplete="off"
+               oninput="filterCursos(this.value)" />
+        <input type="hidden" name="curso_id" id="m-curso-id" />
+        <div class="autocomplete-list" id="m-curso-list" style="display:none;"></div>
+        <p class="form-error" id="m-curso_id-err" style="display:none;"></p>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn" onclick="closeModal('modal-nueva-matricula')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar matrícula</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Confirmar eliminación -->
+<div id="modal-confirmar-eliminar" class="modal-overlay hidden" onclick="if(event.target===this) closeModal('modal-confirmar-eliminar')">
+  <div class="modal modal-enter">
+    <h2>Eliminar matrícula</h2>
+    <p class="modal-sub">Esta acción no se puede deshacer.</p>
+    <p id="confirm-delete-msg" style="margin:16px 0;"></p>
+    <div class="form-actions">
+      <button type="button" class="btn" onclick="closeModal('modal-confirmar-eliminar')">Cancelar</button>
+      <button type="button" class="btn btn-danger" onclick="executeDeleteMatricula()">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ALUMNOS_DATA = {{ alumnos | tojson }};
+const CURSOS_DATA  = {{ cursos  | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/matriculas.js') }}"></script>
+{% endblock %}

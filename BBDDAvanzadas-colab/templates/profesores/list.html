@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container page-enter">
+  <div class="page-header">
+    <h1>Profesores</h1>
+    <p>GET /profesores — {{ total }} registros</p>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-toolbar">
+      <form method="get" style="display:contents;">
+        <input class="search-input" name="q" value="{{ q }}" placeholder="Buscar profesor…" autocomplete="off" />
+      </form>
+      <div class="toolbar-spacer"></div>
+      <button class="btn btn-primary" onclick="openModal('modal-nuevo-profesor')">+ Nuevo profesor</button>
+    </div>
+
+    {% if rows %}
+    <table>
+      <thead>
+        <tr><th>#</th><th>Nombre</th><th>Cursos</th><th>Alumnos distintos</th></tr>
+      </thead>
+      <tbody>
+        {% for id, nombre, n_cursos, n_alumnos in rows %}
+        <tr onclick="location.href='/profesores/{{ id }}'">
+          <td class="td-muted td-mono">{{ id[:8] }}…</td>
+          <td><strong>{{ nombre }}</strong></td>
+          <td><span class="badge">{{ n_cursos }} cursos</span></td>
+          <td><span class="badge badge-dark">{{ n_alumnos }} alumnos</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <span class="pagination-info">{{ filtered }} registros</span>
+      <div class="pagination-btns">
+        <a href="?q={{ q }}&page={{ page - 1 }}" class="pg-btn {{ 'disabled' if page == 1 }}">‹</a>
+        {% for p in pages %}
+          <a href="?q={{ q }}&page={{ p }}" class="pg-btn {{ 'active' if p == page }}">{{ p }}</a>
+        {% endfor %}
+        <a href="?q={{ q }}&page={{ page + 1 }}" class="pg-btn {{ 'disabled' if page == total_pages }}">›</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty">
+      <div class="empty-icon">🔍</div>
+      No se encontraron profesores{% if q %} para "{{ q }}"{% endif %}.
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Modal: Nuevo Profesor -->
+<div id="modal-nuevo-profesor" class="modal-overlay hidden" onclick="if(event.target===this) closeModal('modal-nuevo-profesor')">
+  <div class="modal modal-enter">
+    <h2>Nuevo profesor</h2>
+    <p class="modal-sub">POST /profesores/new</p>
+    <form id="form-profesor" onsubmit="submitProfesor(event)">
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-input" id="p-nombre" name="nombre" placeholder="Ej: Dr. Ana García" />
+        <p class="form-error" id="p-nombre-err" style="display:none;"></p>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn" onclick="closeModal('modal-nuevo-profesor')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar profesor</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/profesores.js') }}"></script>
+{% endblock %}
